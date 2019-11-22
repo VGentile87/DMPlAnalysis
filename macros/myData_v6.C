@@ -1,4 +1,4 @@
-// GENTILE VALERIO (2016-2018) LAST UPDATE 18/11/2019
+// GENTILE VALERIO (2016-2019) LAST UPDATE 18/11/2019
 //
 #define myData_cxx
 #include <TH2.h>
@@ -97,6 +97,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
  Long64_t nentries = fChain->GetEntries();
  cout << "nentries "<< nentries << endl;
  bool scan_type = dmplAn.scanning_type(fChain);
+ dimset = dmplAn.cl_flags(fChain,dimset);
  //----------------------------------------------------------------------------------------------//
 
 
@@ -168,6 +169,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	 dmplAn.encoder_check(jn,fr_x[cl_ifr[jn]],fr_y[cl_ifr[jn]],fr_x[cl_ifr[0]],fr_y[cl_ifr[0]],cl_x[jn],cl_y[jn]);
        cl_x2[jn]=cl_pos[0];
        cl_y2[jn]=cl_pos[1];
+       
        //if(cl_x2[jn]!=cl_pos[0])cout << cl_x2[jn] << " " << cl_pos[0] << " " << cl_x[jn] << endl;	
      }
      //--------------------------------------------------------------------------------------------//
@@ -209,6 +211,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 		npk_npx[in][cl_ipol[jn]].push_back(cl_npx[jn]);
 		npk_vol[in][cl_ipol[jn]].push_back(cl_vol[jn]);
 		frbf_ent[in][cl_ipol[jn]]++;      // number of cl in the frame
+		//if(jentry==3 && in<2)cout << gr_ibfc[in]<<" "<< ipol_gr[in][cl_ipol[jn]] << " " << cl_ipol[jn] << " " << set_start << " " << cl_ifr[in] << endl;
 	      }
 	      else {		
 		if((double)cl_vol[jn]/cl_npx[jn]>((double)cl_vol[ipol_gr[in][cl_ipol[jn]]]/cl_npx[ipol_gr[in][cl_ipol[jn]]])){
@@ -271,6 +274,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	    nCopy--;
 	    gr_copy[in]--; // number of copy in a collection
 	  }
+	  //if(jentry==3 && in<2) cout << in << " " << gr_copy[in] << endl;
 
 	  //---------- NPEAKS IDENTIFICATION--------------------//
 	  if(frbf_ent[in][jn]>1){  // more than 1 cluster in the bfc frame with the same polarization
@@ -446,6 +450,8 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	Double_t *gr_y_pol = new Double_t[gr_copy[in]];
 	Double_t *gr_x_pol_bar = new Double_t[gr_copy[in]];
 	Double_t *gr_y_pol_bar = new Double_t[gr_copy[in]];
+	Double_t *gr_mx_pol_bar = new Double_t[gr_copy[in]];
+	Double_t *gr_my_pol_bar = new Double_t[gr_copy[in]];
 	Double_t *gr_npx_pol_bar = new Double_t[gr_copy[in]];
 	Double_t *gr_vol_pol_bar = new Double_t[gr_copy[in]];
 	Double_t *gr_bright_pol_bar = new Double_t[gr_copy[in]];
@@ -530,6 +536,16 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	  gr_x_mean[in] = TMath::Mean(index_pol,gr_x_pol);
 	  gr_y_mean[in] = TMath::Mean(index_pol,gr_y_pol);
 	  //cout << gr_phi_rms[in] << endl;
+	}
+
+
+	//// CORREZIONE FIT BIGAUS PER CLUSTERS
+	for(int iset = 0;iset<index_pol;iset++){
+	  std::tie(gr_x_pol_bar[iset], gr_y_pol_bar[iset]) = dmplGrAn.cls_bigaus_corr(mu_x[ePolID],mu_y[ePolID],sigma_x[ePolID],sigma_y[ePolID],rho[ePolID],gr_x_pol_bar[iset]-gr_x_mean[in],gr_y_pol_bar[iset]-gr_y_mean[in]);
+	  gr_x_pol_bar[iset] += gr_x_mean[in];
+	  gr_y_pol_bar[iset] += gr_y_mean[in];
+	  xb_frbf_corr[in][iset] = gr_x_pol_bar[iset];
+	  yb_frbf_corr[in][iset] = gr_y_pol_bar[iset];
 	}
       
 	///////// MAX DISTANCE E PHI PER BFCL E BARYCENTER IN BFCLFR
@@ -833,6 +849,8 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	    eGrainz=gr_z[in];
 	    eClustx=xb_frbf[in][jn];
 	    eClusty=yb_frbf[in][jn];
+	    eMClustx = xb_frbf_corr[in][jn];
+	    eMClusty = yb_frbf_corr[in][jn];
 	    eClustMin=cl_ly[ipol_gr[in][jn]];
 	    eClustMaj=cl_lx[ipol_gr[in][jn]];
 	    eClustEll=cl_lx[ipol_gr[in][jn]]/cl_ly[ipol_gr[in][jn]];
@@ -937,6 +955,11 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	    else eEllPrjX = TMath::Abs(eGrainMin*TMath::Sin(eGrainPhi));
 	    if(TMath::Abs(eGrainMin*TMath::Cos(eGrainPhi))>TMath::Abs(eGrainMaj*TMath::Sin(eGrainPhi)))eEllPrjY = TMath::Abs(eGrainMin*TMath::Cos(eGrainPhi));
 	    else eEllPrjY = TMath::Abs(eGrainMaj*TMath::Sin(eGrainPhi));
+
+
+	    //std::tie(eMClustx, eMClusty) = dmplGrAn.cls_bigaus_corr(mu_x[ePolID],mu_y[ePolID],sigma_x[ePolID],sigma_y[ePolID],rho[ePolID],eClustx-eSetXBar,eClusty-eSetYBar);
+	    //eMClustx += eSetXBar;
+	    //eMClusty += eSetYBar;
 	    
 	    
 	    //////// MICROTRACK //////////////////////
