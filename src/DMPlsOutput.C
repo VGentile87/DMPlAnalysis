@@ -80,7 +80,9 @@ std::tuple <TTree*> DMPlsOutput::createTree ()
   Tree_out->Branch("eGrainz",&eGrainz,"eGrainz/D");
   Tree_out->Branch("eClustx",&eClustx,"eClustx/D");
   Tree_out->Branch("eClusty",&eClusty,"eClusty/D");
-  Tree_out->Branch("eClustz",&eClustz,"eClustz/D");
+  Tree_out->Branch("eMClustx",&eMClustx,"eMClustx/D");
+  Tree_out->Branch("eMClusty",&eMClusty,"eMClusty/D");
+  //Tree_out->Branch("eClustz",&eClustz,"eClustz/D");
   Tree_out->Branch("eClustMin",&eClustMin,"eClustMin/D");
   Tree_out->Branch("eClustMaj",&eClustMaj,"eClustMaj/D");
   Tree_out->Branch("eClustEll",&eClustEll,"eClustEll/D");

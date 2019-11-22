@@ -27,6 +27,7 @@ class DMPlsGrAnalyzer
   std::tuple<float,Int_t,Int_t> bfc_fr_multiplicity(int hid, int npol, int nCopy, int ipol_gr[][8], float *fr_z, int *bfc_zfr, int *cl_ifr);
 
   float corr_bfc_fr_check(int hid, int npol, int nCopy, int ipol_gr[][8], float *fr_z, int *bfc_zfr, int *cl_ifr);
+  std::tuple<double,double> cls_bigaus_corr(double mu_x, double mu_y, double sigma_x, double sigma_y, double rho, double cl_x, double cl_y);
 
 private:
 

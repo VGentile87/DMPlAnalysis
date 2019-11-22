@@ -102,7 +102,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 
 
  //---- TREE READING ----------------------------------------------------------------------------//
- for (Long64_t jentry=0; jentry<100/*nentries*/;jentry++) { // loop on Views
+ for (Long64_t jentry=0; jentry<nentries;jentry++) { // loop on Views
    
    GetEntry(jentry);
    Long64_t ientry = LoadTree(jentry);
@@ -541,7 +541,9 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 
 	//// CORREZIONE FIT BIGAUS PER CLUSTERS
 	for(int iset = 0;iset<index_pol;iset++){
-	  std::tie(gr_x_pol_bar[iset], gr_y_pol_bar[iset]) = dmplGrAn.cls_bigaus_corr(mu_x[ePolID],mu_y[ePolID],sigma_x[ePolID],sigma_y[ePolID],rho[ePolID],gr_x_pol_bar[iset]-gr_x_mean[in],gr_y_pol_bar[iset]-gr_y_mean[in]);
+	  std::tie(gr_x_pol_bar[iset], gr_y_pol_bar[iset]) = dmplGrAn.cls_bigaus_corr(mu_x[ePolID],mu_y[ePolID],sigma_x[ePolID],sigma_y[ePolID],rho[ePolID],(gr_x_pol_bar[iset]-gr_x_mean[in])*1000,(gr_y_pol_bar[iset]-gr_y_mean[in])*1000);
+	  gr_x_pol_bar[iset] /= 1000; //um
+	  gr_y_pol_bar[iset] /= 1000; //um
 	  gr_x_pol_bar[iset] += gr_x_mean[in];
 	  gr_y_pol_bar[iset] += gr_y_mean[in];
 	  xb_frbf_corr[in][iset] = gr_x_pol_bar[iset];

@@ -103,6 +103,8 @@ Double_t eEllPrjX;
 Double_t eEllPrjY;
 Double_t eClustx;
 Double_t eClusty;
+Double_t eMClustx;
+Double_t eMClusty;
 Double_t eClustz;
 Double_t eClustMin;
 Double_t eClustMaj;

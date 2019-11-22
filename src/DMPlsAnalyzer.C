@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "TH1.h"
 using namespace std;
 
 std::vector<double> DMPlsAnalyzer::encoder_check(int ipol, double fr_cl_x, double fr_cl_y, double fr_cl_x_pol0, double fr_cl_y_pol0, double cl_x, double cl_y)
@@ -160,4 +161,14 @@ bool DMPlsAnalyzer::scanning_type(TTree *fChain)
 
  if(vid_mean>aid_mean) return true;
  else return false;
+}
+
+
+int DMPlsAnalyzer::cl_flags(TTree *fChain, int dim)
+{
+ 
+  fChain->Draw("cl.flags","","goff");
+  if((int)fChain->GetHistogram()->GetBinContent(3)==0)dim=9;
+  else dim=10;
+  return dim;
 }
