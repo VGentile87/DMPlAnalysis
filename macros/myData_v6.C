@@ -684,30 +684,30 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	delete [] gr_xy_dist_bar;
 	
 	/////// OUTPUT LOGS ////////////////
-	mybfcl << "View: "<< viewID << " - Grain ID: " << in << " - # Elements: " << index_pol << endl;
-	mybfcl << "bfcl("<< hID << "," << viewID << "," << in << ",40,";
+	//mybfcl << "View: "<< viewID << " - Grain ID: " << in << " - # Elements: " << index_pol << endl;
+	//mybfcl << "bfcl("<< hID << "," << viewID << "," << in << ",40,";
 	if(gr_copy[in]==npol)bfcl8 << "bfcl("<< hID << "," << viewID << "," << in << ",40,";
 	
-	if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated)log_col << hID << " " << viewID << " " << in << " " << gr_max_dist_bar[in] << " " << phi_set_bar[in] << endl; 
+	//if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated)log_col << hID << " " << viewID << " " << in << " " << gr_max_dist_bar[in] << " " << phi_set_bar[in] << endl; 
 	
-	if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated && gr_max_dist_bar[in]>cut_bar_l && gr_max_dist_bar[in]<cut_bar_u &&  gr_path[in]/gr_max_dist_bar[in]>cut_reg_l && gr_path[in]/gr_max_dist_bar[in]<cut_reg_u)cut8 << "bfcl("<< hID << "," << viewID << "," << in << ",40,";
+	//if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated && gr_max_dist_bar[in]>cut_bar_l && gr_max_dist_bar[in]<cut_bar_u &&  gr_path[in]/gr_max_dist_bar[in]>cut_reg_l && gr_path[in]/gr_max_dist_bar[in]<cut_reg_u)cut8 << "bfcl("<< hID << "," << viewID << "," << in << ",40,";
 	
 	
 	for(int k=0;k<npol;k++){
 	  if(k<7){
-	    mybfcl <<sort_gr[k] << ",";
+	    //mybfcl <<sort_gr[k] << ",";
 	    if(gr_copy[in]==npol)bfcl8 <<sort_gr[k] << ",";
-	    if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated && gr_max_dist_bar[in]>cut_bar_l && gr_max_dist_bar[in]<cut_bar_u &&  gr_path[in]/gr_max_dist_bar[in]>cut_reg_l && gr_path[in]/gr_max_dist_bar[in]<cut_reg_u)cut8 <<sort_gr[k] << ",";
+	    //if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated && gr_max_dist_bar[in]>cut_bar_l && gr_max_dist_bar[in]<cut_bar_u &&  gr_path[in]/gr_max_dist_bar[in]>cut_reg_l && gr_path[in]/gr_max_dist_bar[in]<cut_reg_u)cut8 <<sort_gr[k] << ",";
 	  }
 	  if(k==7){
-	    mybfcl <<sort_gr[k] << ")";
+	    //mybfcl <<sort_gr[k] << ")";
 	    if(gr_copy[in]==npol)bfcl8 <<sort_gr[k] << ")";
-	    if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated && gr_max_dist_bar[in]>cut_bar_l && gr_max_dist_bar[in]<cut_bar_u &&  gr_path[in]/gr_max_dist_bar[in]>cut_reg_l && gr_path[in]/gr_max_dist_bar[in]<cut_reg_u)cut8 <<sort_gr[k] << ")";
+	    //if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated && gr_max_dist_bar[in]>cut_bar_l && gr_max_dist_bar[in]<cut_bar_u &&  gr_path[in]/gr_max_dist_bar[in]>cut_reg_l && gr_path[in]/gr_max_dist_bar[in]<cut_reg_u)cut8 <<sort_gr[k] << ")";
 	  }
 	}
-	mybfcl << endl;
+	//mybfcl << endl;
 	if(gr_copy[in]==npol)bfcl8 << endl;
-        if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated && gr_max_dist_bar[in]>cut_bar_l && gr_max_dist_bar[in]<cut_bar_u &&  gr_path[in]/gr_max_dist_bar[in]>cut_reg_l && gr_path[in]/gr_max_dist_bar[in]<cut_reg_u)cut8 << endl;
+        //if(gr_copy[in]==cut_npol && gr_lx[in]/gr_ly[in]!=cut_nofit && grain[in]==cut_goodzone && gr_ly[in]>=cut_minor && gr_ncl[in]<cut_ncl && gr_imt[in]==cut_mtrk && gr_isolated[in]==cut_isolated && gr_max_dist_bar[in]>cut_bar_l && gr_max_dist_bar[in]<cut_bar_u &&  gr_path[in]/gr_max_dist_bar[in]>cut_reg_l && gr_path[in]/gr_max_dist_bar[in]<cut_reg_u)cut8 << endl;
 	///////////////////////////////////
 	
       }
@@ -1003,14 +1003,14 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	    }
 	    
 	  // YANDEX LOG FILE
-	  if(eBfcArea>10 && eGoodZone==true && eFlag==0){
+	  /*if(eBfcArea>10 && eGoodZone==true && eFlag==0){
 	    if(jn==0) yandex << eHeaderID << ","  << eViewID << "," << eGrainID << "," << eBfcPolID << ",";
 	    if(jn>0) yandex << eBfcPolID << ",";
 	    if(jn==7) yandex << eIsolated << "," << eSetNCopy << endl;
 
 	    if(jn==0 && eSetMaxBar>0.04 && eSetMaxBar<0.100 && eIsolated<0) sig << eHeaderID << "," << eViewID << "," << eGrainID << "," << eSetMaxBar << "," << eSetPhiBar << endl;
 	    if(jn==0 && eSetMaxBar<0.02 && eSetMaxBar>0 && eIsolated<0) bkg << eHeaderID << "," << eViewID << "," << eGrainID << "," << eSetMaxBar << "," << eSetPhiBar << endl;
-	  }
+	  }*/
 
 	  // PSF LOG FILE
 	  if(eBfcArea>10 && eGoodZone==true && eFlag==0 && ePuls>1 && (eIsolated==-1 || (eIsolated==-2 && eSetNpeaksPhi==10)) && eSetNCopy==8 && eSetMaxBar<0.02 && eCleanPar==0 && eGrainMin>0.13 && eGrainMin<0.18 && eGrainEll<1.25 ){
