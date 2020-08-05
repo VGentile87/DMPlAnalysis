@@ -427,8 +427,8 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	if(gr_phi[in]>(3*TMath::Pi()/2.) && gr_phi[in]<=(2*TMath::Pi()))eGrainPhi=gr_phi[in] - 2*TMath::Pi();
 	/////
 	
-	mybfcl  << "Id candidate: "<< gr_id[in] << endl;
-	if(gr_imt[in]!=-1)mybfcl << "It's a microtrack " << endl;
+	//mybfcl  << "Id candidate: "<< gr_id[in] << endl;
+	//if(gr_imt[in]!=-1)mybfcl << "It's a microtrack " << endl;
 
 	///////////////// ELEMENTI IN UNA COLLEZIONE
 	//gr_copy[in]=npol;     
@@ -523,7 +523,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	      //gr_npeaks[in] = gr_npeaks[in] + num_peaks[in][jpol]-1; // -1 per non avere molteplicità 2
 	    //}
 
-	    mybfcl  << "Bfc candidates: "<< ipol_gr[in][jpol] << " " << gr_pol_id[index_pol] << " " << gr_x_pol[index_pol] << " " << gr_y_pol[index_pol] << " " <<  gr_z_pol[index_pol] << endl;
+	    //mybfcl  << "Bfc candidates: "<< ipol_gr[in][jpol] << " " << gr_pol_id[index_pol] << " " << gr_x_pol[index_pol] << " " << gr_y_pol[index_pol] << " " <<  gr_z_pol[index_pol] << endl;
 	    sort_gr[cl_ipol[ipol_gr[in][jpol]]]=ipol_gr[in][jpol];	    
 	    index_pol++;
 	  }
