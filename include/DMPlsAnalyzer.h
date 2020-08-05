@@ -24,6 +24,7 @@ class DMPlsAnalyzer
    std::tuple <double, double, double, double, double, double, double, int, int, int, int, double, int, int, int, double, double, double, double, int, int> myDatacard (char*datacard, double x_pix_size, double y_pix_size, double len_view_x, double len_view_y, double thr_ldust_br, double thr_ldust_area, double fid_cut_par, int maxcl, int cut_nofit, int cut_goodzone, int cut_ncl, double cut_minor, int cut_isolated, int cut_npol, int cut_mtrk, double cut_bar_l, double cut_reg_u, double cut_bar_u, double cut_reg_l, int cut_view, int channel);
 
    bool scanning_type(TTree *fChain);
+   int cl_flags(TTree *fChain, int dim);
 
      private:
    double x;

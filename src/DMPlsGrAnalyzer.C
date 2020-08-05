@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "TMatrixD.h"
 
 using namespace std;
 
@@ -131,4 +132,66 @@ float DMPlsGrAnalyzer::corr_bfc_fr_check(int hid, int npol, int nCopy, int ipol_
   return gr_gap_z;
 
 }
+
+
+
+
+std::tuple<double,double> DMPlsGrAnalyzer::cls_bigaus_corr(double mu_x, double mu_y, double sigma_x, double sigma_y, double rho, double cl_x, double cl_y){
   
+  double phi = TMath::ATan(rho);
+  double sigma_maj = 0;
+  double sigma_min = 0;
+  if(sigma_x>sigma_y){
+    sigma_maj = sigma_x;///TMath::Cos(phi);
+    sigma_min = sigma_y;///TMath::Cos(phi);
+  }
+  else{
+    sigma_maj = sigma_y;///TMath::Cos(phi);
+    sigma_min = sigma_x;///TMath::Cos(phi);
+  }
+  
+  
+  TMatrixD m1(2,2);
+  TArrayD data1(4);
+  data1[0] = TMath::Cos(phi);
+  data1[1] = -TMath::Sin(phi);
+  data1[2] = TMath::Sin(phi);
+  data1[3] = TMath::Cos(phi);
+  m1.SetMatrixArray(data1.GetArray());
+  
+  TMatrixD m2(2,2);
+  TArrayD data2(4);
+  data2[0] = 1./sigma_maj;
+  data2[1] = 0;
+  data2[2] = 0;
+  data2[3] = 1./sigma_min;
+  m2.SetMatrixArray(data2.GetArray());
+  
+  TMatrixD m3(2,2);
+  TArrayD data3(4);
+  data3[0] = TMath::Cos(phi);
+  data3[1] = TMath::Sin(phi);
+  data3[2] = -TMath::Sin(phi);
+  data3[3] = TMath::Cos(phi);
+  m3.SetMatrixArray(data3.GetArray());
+  
+  TMatrixD m4(2,1);
+  TArrayD data4(2);
+  data4[0] = cl_x - mu_x;
+  data4[1] = cl_y - mu_y; 
+  m4.SetMatrixArray(data4.GetArray());
+  
+  TMatrixD A(2,1),B(2,1),C(2,1);
+  A.Mult(m3,m4);
+  B.Mult(m2,A);
+  C.Mult(m1,B);
+
+  
+  double x = TMath::Sqrt(sigma_maj*sigma_min)*C(0,0); 
+  double y = TMath::Sqrt(sigma_maj*sigma_min)*C(1,0);  
+    //double x = TMath::Sqrt(sigma_x*sigma_y)*m1*m2*m3*m4;
+
+  //cout << x << " " << y << endl;
+  return std::make_tuple(x,y);
+}
+

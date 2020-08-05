@@ -1,4 +1,4 @@
-// GENTILE VALERIO (2016-2018) LAST UPDATE 18/11/2019
+// GENTILE VALERIO (2016-2019) LAST UPDATE 18/11/2019
 //
 #define myData_cxx
 #include <TH2.h>
@@ -25,7 +25,12 @@
 #include <TF1.h>
 #include <numeric>
 #include <tuple>
-
+/*static constexpr Int_t kMaxcl = 8434; 
+static constexpr Int_t kMaxgr = 207; 
+static constexpr Int_t kMaxmt = 51; 
+static constexpr Int_t kMaxim = 7759; 
+static constexpr Int_t kMaxfr = 1000; 
+*/
 #include "TROOT.h"
 #include "TRandom.h"
 #include "TGraph.h"
@@ -84,7 +89,9 @@ cout << "If it is not correct please change 'fid_cut_par' in 'settings.mac'" << 
 cout << "End of settings (enjoy the results)" << "\n\n";
 //-----------------------------------------------------------------------------------------------//
 
-//---------------  OUTPUTS  ----------------------------------------------------------------//  
+//---------------  OUTPUTS  ----------------------------------------------------------------//
+ ofstream log_psf("list_psf.txt");
+ //ofstream log_carbon("list_carbon.txt");
  std::tie(mybfcl, bfcl8, yandex, cut8, log_col, sig, bkg) = dmplOut.createLogs();
  dmplOut.createHistos(len_view_y,len_view_y,totXbin,totYbin);
  //dmplOut.createCanvas();  //for image study
@@ -97,11 +104,12 @@ cout << "End of settings (enjoy the results)" << "\n\n";
  Long64_t nentries = fChain->GetEntries();
  cout << "nentries "<< nentries << endl;
  bool scan_type = dmplAn.scanning_type(fChain);
+ dimset = dmplAn.cl_flags(fChain,dimset);
  //----------------------------------------------------------------------------------------------//
 
 
  //---- TREE READING ----------------------------------------------------------------------------//
- for (Long64_t jentry=0; jentry<100/*nentries*/;jentry++) { // loop on Views
+ for (Long64_t jentry=0; jentry<nentries;jentry++) { // loop on Views
    
    GetEntry(jentry);
    Long64_t ientry = LoadTree(jentry);
@@ -168,6 +176,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	 dmplAn.encoder_check(jn,fr_x[cl_ifr[jn]],fr_y[cl_ifr[jn]],fr_x[cl_ifr[0]],fr_y[cl_ifr[0]],cl_x[jn],cl_y[jn]);
        cl_x2[jn]=cl_pos[0];
        cl_y2[jn]=cl_pos[1];
+       
        //if(cl_x2[jn]!=cl_pos[0])cout << cl_x2[jn] << " " << cl_pos[0] << " " << cl_x[jn] << endl;	
      }
      //--------------------------------------------------------------------------------------------//
@@ -189,7 +198,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
        gr_set_start[in]=set_start;
        //gr_npeaks_npol[in]=0;
        //gr_npeaks[in]=0;
-       
+
 	/// start cluster
 	for(int jn=0; jn<cl_;jn++){ //loop sui clusters
 	  
@@ -209,6 +218,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 		npk_npx[in][cl_ipol[jn]].push_back(cl_npx[jn]);
 		npk_vol[in][cl_ipol[jn]].push_back(cl_vol[jn]);
 		frbf_ent[in][cl_ipol[jn]]++;      // number of cl in the frame
+		//if(jentry==3 && in<2)cout << gr_ibfc[in]<<" "<< ipol_gr[in][cl_ipol[jn]] << " " << cl_ipol[jn] << " " << set_start << " " << cl_ifr[in] << endl;
 	      }
 	      else {		
 		if((double)cl_vol[jn]/cl_npx[jn]>((double)cl_vol[ipol_gr[in][cl_ipol[jn]]]/cl_npx[ipol_gr[in][cl_ipol[jn]]])){
@@ -271,6 +281,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	    nCopy--;
 	    gr_copy[in]--; // number of copy in a collection
 	  }
+	  //if(jentry==3 && in<2) cout << in << " " << gr_copy[in] << endl;
 
 	  //---------- NPEAKS IDENTIFICATION--------------------//
 	  if(frbf_ent[in][jn]>1){  // more than 1 cluster in the bfc frame with the same polarization
@@ -408,7 +419,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
       
       /////////////////// PARTE 3: COLLEZIONI DI GRANI  ////////////////////////////////////////////////////////////////////////////////////////////////
       
-      for(int in = 0;in<gr_; in++){	
+      for(int in = 0;in<gr_; in++){
 
 	// phi angle (raw data) is set in the range from -pi/2 to pi/2
 	if(gr_phi[in]<=(TMath::Pi()/2.))eGrainPhi=gr_phi[in];
@@ -446,6 +457,8 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	Double_t *gr_y_pol = new Double_t[gr_copy[in]];
 	Double_t *gr_x_pol_bar = new Double_t[gr_copy[in]];
 	Double_t *gr_y_pol_bar = new Double_t[gr_copy[in]];
+	Double_t *gr_mx_pol_bar = new Double_t[gr_copy[in]];
+	Double_t *gr_my_pol_bar = new Double_t[gr_copy[in]];
 	Double_t *gr_npx_pol_bar = new Double_t[gr_copy[in]];
 	Double_t *gr_vol_pol_bar = new Double_t[gr_copy[in]];
 	Double_t *gr_bright_pol_bar = new Double_t[gr_copy[in]];
@@ -530,6 +543,18 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	  gr_x_mean[in] = TMath::Mean(index_pol,gr_x_pol);
 	  gr_y_mean[in] = TMath::Mean(index_pol,gr_y_pol);
 	  //cout << gr_phi_rms[in] << endl;
+	}
+
+
+	//// CORREZIONE FIT BIGAUS PER CLUSTERS
+	for(int iset = 0;iset<index_pol;iset++){
+	  std::tie(gr_x_pol_bar[iset], gr_y_pol_bar[iset]) = dmplGrAn.cls_bigaus_corr(mu_x[ePolID],mu_y[ePolID],sigma_x[ePolID],sigma_y[ePolID],rho[ePolID],(gr_x_pol_bar[iset]-gr_x_mean[in])*1000,(gr_y_pol_bar[iset]-gr_y_mean[in])*1000);
+	  gr_x_pol_bar[iset] /= 1000; //um
+	  gr_y_pol_bar[iset] /= 1000; //um
+	  gr_x_pol_bar[iset] += gr_x_mean[in];
+	  gr_y_pol_bar[iset] += gr_y_mean[in];
+	  xb_frbf_corr[in][iset] = gr_x_pol_bar[iset];
+	  yb_frbf_corr[in][iset] = gr_y_pol_bar[iset];
 	}
       
 	///////// MAX DISTANCE E PHI PER BFCL E BARYCENTER IN BFCLFR
@@ -693,7 +718,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
       
       if(flag==0){
       for(int in=0;in<gr_;in++){
-
+		
 	//// INIZIALIZATIONS
 	tmp_gr_dist=0;
 	tmp_rdist=100;
@@ -805,18 +830,20 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	
       } /// relative distance
       
-    } 
+      // } 
 	
       ///////////////////////////// END 4
 
       /////////////////// PARTE 5: DATASET (costruzione del Tree)  ////////////////////////////////////////////////////////////////////////////////////////////////
       
       for(int in = 0;in<gr_; in++){   /// indice sui grani
+	//cout << "grains " << in << endl;
 	  int clset[npol]={};
 	  for(int jn=0; jn<npol;jn++){     /// indice sulle polarizzazioni
 	    
 	    eChannel=channel;             // for smart comparison
 	    eHeaderID=id;
+	    eEvent=event&0x3F;
 	    eViewID=viewID;
 	    eFlag=flag;
 	    eGrainID=in;
@@ -833,6 +860,8 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	    eGrainz=gr_z[in];
 	    eClustx=xb_frbf[in][jn];
 	    eClusty=yb_frbf[in][jn];
+	    eMClustx = xb_frbf_corr[in][jn];
+	    eMClusty = yb_frbf_corr[in][jn];
 	    eClustMin=cl_ly[ipol_gr[in][jn]];
 	    eClustMaj=cl_lx[ipol_gr[in][jn]];
 	    eClustEll=cl_lx[ipol_gr[in][jn]]/cl_ly[ipol_gr[in][jn]];
@@ -937,6 +966,11 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	    else eEllPrjX = TMath::Abs(eGrainMin*TMath::Sin(eGrainPhi));
 	    if(TMath::Abs(eGrainMin*TMath::Cos(eGrainPhi))>TMath::Abs(eGrainMaj*TMath::Sin(eGrainPhi)))eEllPrjY = TMath::Abs(eGrainMin*TMath::Cos(eGrainPhi));
 	    else eEllPrjY = TMath::Abs(eGrainMaj*TMath::Sin(eGrainPhi));
+
+
+	    //std::tie(eMClustx, eMClusty) = dmplGrAn.cls_bigaus_corr(mu_x[ePolID],mu_y[ePolID],sigma_x[ePolID],sigma_y[ePolID],rho[ePolID],eClustx-eSetXBar,eClusty-eSetYBar);
+	    //eMClustx += eSetXBar;
+	    //eMClusty += eSetYBar;
 	    
 	    
 	    //////// MICROTRACK //////////////////////
@@ -977,10 +1011,21 @@ cout << "End of settings (enjoy the results)" << "\n\n";
 	    if(jn==0 && eSetMaxBar>0.04 && eSetMaxBar<0.100 && eIsolated<0) sig << eHeaderID << "," << eViewID << "," << eGrainID << "," << eSetMaxBar << "," << eSetPhiBar << endl;
 	    if(jn==0 && eSetMaxBar<0.02 && eSetMaxBar>0 && eIsolated<0) bkg << eHeaderID << "," << eViewID << "," << eGrainID << "," << eSetMaxBar << "," << eSetPhiBar << endl;
 	  }
+
+	  // PSF LOG FILE
+	  if(eBfcArea>10 && eGoodZone==true && eFlag==0 && ePuls>1 && (eIsolated==-1 || (eIsolated==-2 && eSetNpeaksPhi==10)) && eSetNCopy==8 && eSetMaxBar<0.02 && eCleanPar==0 && eGrainMin>0.13 && eGrainMin<0.18 && eGrainEll<1.25 ){
+
+	    if(jn==0) log_psf << eHeaderID << " "  << eViewID << " " << eGrainID << " " << eBfcPolID << " ";
+	    if(jn>0) log_psf << eBfcPolID << " ";
+	    if(jn==7) log_psf << eIsolated << endl;
+	    
+	  }
 	  
-	  Tree_out->Fill();      
+	  Tree_out->Fill();
+	  if(jentry%100==0)Tree_out->AutoSave("SaveSelf");
 	  }
 	  }
+      }//end flag
       ////////////////// END 5
       
       delete [] cl_x2;
@@ -1025,6 +1070,7 @@ cout << "End of settings (enjoy the results)" << "\n\n";
   bkg.close();
   cut8.close();
   log_col.close();
+  log_psf.close();
   f_out->Close();
   
 } // end Loop

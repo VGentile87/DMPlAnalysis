@@ -36,7 +36,7 @@ double thr_ldust_area =0;
 double fid_cut_par=0;
 double maxcl=0;
 const int npol=8;
-const int dimset = 9; // dimension of the set 8pol + 1mrg
+int dimset = 9; // dimension of the set 8pol + 1mrg (old vrs +1_0again)
 int cut_nofit=1;
 int cut_goodzone=1;
 int cut_ncl=30;
@@ -275,6 +275,8 @@ Bool_t mtrk[kMaxmt]={};
 
 Double_t xb_frbf[kMaxgr][npol]={};
 Double_t yb_frbf[kMaxgr][npol]={};
+Double_t xb_frbf_corr[kMaxgr][npol]={};
+Double_t yb_frbf_corr[kMaxgr][npol]={};
 Double_t vol_frbf[kMaxgr][npol]={};
 Double_t npx_frbf[kMaxgr][npol]={};
 Double_t cl_x_pos[kMaxgr][npol]={};
@@ -335,6 +337,14 @@ std::vector <std::vector<std::vector<double>>>npk_y;
 std::vector <std::vector<std::vector<double>>>npk_npx;
 std::vector <std::vector<std::vector<double>>>npk_vol;
 
+
+double mu_x[8]={-0.4682,0.08492,0.624,0.8336,0.6052,0.09962,-0.5526,-1.043};
+double mu_y[8]={0.08525,-0.2266,0.05126,0.2399,0.1969,0.06421,-0.1565,-0.3379};
+double sigma_x[8]={5.131,4.07,3.376,2.997,3.024,3.208,3.817,4.606};
+double sigma_y[8]={4.085,3.732,3.579,3.594,3.669,3.684,3.807,4.059};
+double rho[8]={0.00321,0.09029,0.1149,0.07352,-0.01105,-0.07497,-0.1256,-0.1339};
+
+
 void first_initializer(int dim, int npol, int *gr_imt)
 {
   npk_x.resize(dim);
@@ -346,6 +356,8 @@ void first_initializer(int dim, int npol, int *gr_imt)
     for(int jn=0;jn<npol;jn++){
       xb_frbf[in][jn]=0;
       yb_frbf[in][jn]=0;
+      xb_frbf_corr[in][jn]=0;
+      yb_frbf_corr[in][jn]=0;
       vol_frbf[in][jn]=0;
       npx_frbf[in][jn]=0;
       same_frame[in][jn]=-1;
